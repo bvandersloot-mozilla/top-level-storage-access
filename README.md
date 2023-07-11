@@ -39,10 +39,10 @@ flowchart TD
     s --> perm
     perm -->|yes| give
     give --> resolveTrue
-    perm -->|no| acceptable
-    acceptable -->|yes| ui
+    perm -->|no| ui
+    ui -->|yes| acceptable
     ui -->|no| reject
-    ui -->|yes| prompt
+    acceptable -->|yes| prompt
     prompt -->|reject| reject 
     prompt -->|accept| setPerm
     setPerm --> give
@@ -110,16 +110,21 @@ The following is some example HTML/JS that shows how these might be used.
       async function button_cb() {
         let logged_in = await document.requestStorageAccessFor("https://auth.identity.com");
         if (logged_in) {
-          unhide_something();
+          unhide_something(logged_in);
         } else {
         	window.open("https://auth.identity.com/link.html?redirect_uri=https://www.example.com/", "_self");
         }
       }
-      async function unhide_something() { 
-        let logged_in = false;
-        try {
-          logged_in = await document.requestStorageAccessFor("https://auth.identity.com");
-        } catch {/* Failed because of user activation missing if not logged in */};
+      async function unhide_something(logged_in = false) {
+        if (!logged_in) {
+          let ps = await navigator.permissions.get("top-level-storage-access");
+          if (ps.state == "granted") {
+            try {
+              await document.requestStorageAccessFor("https://auth.identity.com");
+              logged_in = true;
+            }
+          }
+        }
         if (logged_in) {
           document.getElementById("profile-picture").hidden = false;
           document.getElementById("profile-picture").src="https://auth.identity.com/me/picture.jpg"
@@ -195,5 +200,6 @@ The following is some example HTML/JS that shows how these might be used.
 
 1. Would granting storage access permission to iframes for the IDP satisfy requirements here? i.e. if a call to `navigator.permitStorageAccessRequestsFrom` would bypass the user-interaction requirement of the Storage Access API, do existing IDP flows work?
 2. Do we need the `queryURI` in `PermitStorageAccessArgument`? Should we permit `allowAll`?
-3. Should/Can we not add a permission to the Permissions API for top-level storage access?
-4. Are the names of functions fine?
+3. Is it acceptable to allow the RP to know whether or not the user has been on an IDP with user interaction and a possible prompt if they have? Rather, would it be better for a rejected permission dialog to be the same as "not permitted by IDP" and "not visited IDP" or should it stay clear that the user made a choice? There is a tradeoff between API usability and abuse resistance.
+4. Should/Can we not add a permission to the Permissions API for top-level storage access?
+5. Are the names of functions fine?
