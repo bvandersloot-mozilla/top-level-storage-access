@@ -1,6 +1,6 @@
 # Top-Level Storage Access API Extension
 
-To support use cases of federated authentication, browsers have used priveleged APIs or heuristics to provide access to unpartitioned cross-site cookies to embedded resources in the top level. This is a proposal to provide a web-exposed mechanism for providing the same access while retaining some of the user-centric properties of the traditional Storage Access API. In particular, this extension requires user activation inside of the origin of the embedded resources.
+To support use cases of federated authentication, browsers have used privileged APIs or heuristics to provide access to unpartitioned cross-site cookies to embedded resources in the top level. This is a proposal to provide a web-exposed mechanism for providing the same access while retaining some of the user-centric properties of the traditional Storage Access API. In particular, this extension requires user activation inside of the origin of the embedded resources.
 
 ## The API Shape
 
@@ -14,7 +14,7 @@ A similar function is already defined in the Storage Access API, however we need
 
 This will set a permission if the origin allows this request based on the calling Document. 
 
-This comes with a similar pair funciton to the regular storageAccessAPI that indicates whether or not the given origin currently has access to its unpartitioned cookies.
+This comes with a similar pair function to the regular storageAccessAPI that indicates whether or not the given origin currently has access to its unpartitioned cookies.
 
 ```web-idl
 partial interface Document {
